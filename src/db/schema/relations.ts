@@ -40,6 +40,9 @@ import { shipmentCityAnterajaTable } from "@/db/schema/shipment-city-anteraja.ts
 import { flashsaleTable } from "@/db/schema/flashsale.ts";
 import { flashsaleDetailTable } from "@/db/schema/flashsale-detail.ts";
 import { flashsaleCategoryTable } from "@/db/schema/flashsale-category.ts";
+import { productPriceTable } from "@/db/schema/product-price.ts";
+import { orderPaymentTable } from "@/db/schema/order-payment.ts";
+import { customerWhitelabelTable } from "@/db/schema/customer-whitelabel.ts";
 
 export const contentRelations = relations(contentTable, ({ one, many }) => ({
   category: one(categoryTable, {
@@ -86,6 +89,12 @@ export const productRelations = relations(productTable, ({ one, many }) => ({
   productReviews: many(productReviewTable),
   orderDetails: many(orderDetailTable),
   stocks: many(productStockTable),
+
+  // Relasi grosir (product price) & ongoing flash sale detail,
+  // mengikuti relasi `grosir` dan `ongoing_fs_detail` pada Laravel.
+  grosir: many(productPriceTable),
+
+  ongoing_fs_detail: many(flashsaleDetailTable),
 }));
 
 export const merchantRelations = relations(merchantTable, ({ one, many }) => ({
@@ -196,6 +205,30 @@ export const productStockRelations = relations(productStockTable, ({ one }) => (
   }),
 }));
 
+export const productPriceRelations = relations(productPriceTable, ({ one }) => ({
+  product: one(productTable, {
+    fields: [productPriceTable.productId],
+    references: [productTable.productId],
+  }),
+}));
+
+export const cartRelations = relations(cartTable, ({ one }) => ({
+  product: one(productTable, {
+    fields: [cartTable.productId],
+    references: [productTable.productId],
+  }),
+
+  merchant: one(merchantTable, {
+    fields: [cartTable.merchantId],
+    references: [merchantTable.merchantId],
+  }),
+
+  variant: one(productStockTable, {
+    fields: [cartTable.psId],
+    references: [productStockTable.psId],
+  }),
+}));
+
 export const customerSimRelations = relations(customerSimTable, ({ one, many }) => ({
   customer: one(customerTable, {
     fields: [customerSimTable.customerId],
@@ -230,6 +263,11 @@ export const customerRelations = relations(customerTable, ({ one, many }) => ({
   address: one(customerAddressTable, {
     fields: [customerTable.customerId],
     references: [customerAddressTable.customerId],
+  }),
+
+  whitelabel: one(customerWhitelabelTable, {
+    fields: [customerTable.customerId],
+    references: [customerWhitelabelTable.customerId],
   }),
 
   parent: one(customerTable, {
@@ -382,6 +420,12 @@ export const orderRelations = relations(orderTable, ({ one, many }) => ({
     references: [merchantTable.merchantId],
   }),
   details: many(orderDetailTable),
+
+  // Relasi `order_payment` (with('order_payment') pada Laravel).
+  order_payment: one(orderPaymentTable, {
+    fields: [orderTable.oPaymentId],
+    references: [orderPaymentTable.oPaymentId],
+  }),
 }));
 
 export const orderCashbackRelations = relations(orderCashbackTable, ({ one }) => ({

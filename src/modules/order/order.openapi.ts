@@ -6,11 +6,13 @@ import {
   CancelOrderResponseSchema,
   FinishOrderRequestSchema,
   FinishOrderResponseSchema,
+  TransactionV3RequestSchema,
+  TransactionV3ResponseSchema,
 } from "./order.dto.ts";
 
 export const orderTag: OpenAPITagDefinition = {
   name: "Order",
-  description: "Endpoint untuk konfirmasi dan pembatalan pesanan",
+  description: "Endpoint untuk transaksi checkout, konfirmasi, dan pembatalan pesanan",
 };
 
 const TAGS = [orderTag.name];
@@ -44,6 +46,21 @@ export const cancelOrderRoute = createStandardPostRoute({
   reqRequired: true,
   resSchema: CancelOrderResponseSchema,
   resDescription: "Berhasil membatalkan pesanan",
+  withSessionToken: true,
+  errors: AUTH_ERRORS,
+});
+
+/** POST /order/transaction_v3 */
+export const transactionV3Route = createStandardPostRoute({
+  path: "/transaction_v3",
+  tags: TAGS,
+  summary: "Transaction v3",
+  description:
+    "Checkout transaksi (migrasi transaction_v3 + payment_method_request_v2): validasi promo & PIN, pengecekan cart/product/flash sale, pembuatan order payment + order + order detail, potong stok, promo cashback/ongkir, notifikasi merchant, dan email konfirmasi. payment_method_request_v2 (VA Xfers, QRIS WinPay, retail Xendit) berjalan internal untuk grup retail/va/qris.",
+  reqSchema: TransactionV3RequestSchema,
+  reqRequired: true,
+  resSchema: TransactionV3ResponseSchema,
+  resDescription: "Hasil proses transaksi",
   withSessionToken: true,
   errors: AUTH_ERRORS,
 });

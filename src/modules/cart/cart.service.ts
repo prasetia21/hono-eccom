@@ -66,33 +66,33 @@ export class CartService {
   }
 
   async cartQtyV3(params: CartQtyV3Params): Promise<UpdateCartServiceResult> {
-    return this.repository.cartQtyV3(params);
+    return await this.repository.cartQtyV3(params);
   }
 
   async cartDeleteV2(customerId: number, cartId: number): Promise<CartDeleteServiceResult> {
-    return this.repository.cartDeleteV2(customerId, cartId);
+    return await this.repository.cartDeleteV2(customerId, cartId);
   }
 
   async cartDeleteAllV2(customerId: number): Promise<CartDeleteAllServiceResult> {
-    return this.repository.cartDeleteAllV2(customerId);
+    return await this.repository.cartDeleteAllV2(customerId);
   }
 
   async cartSelectedV2(customerId: number, cartId: number): Promise<CartSelectedServiceResult> {
-    return this.repository.cartSelectedV2(customerId, cartId);
+    return await this.repository.cartSelectedV2(customerId, cartId);
   }
 
   async cartSelectedAll(
     customerId: number,
     status: "on" | "off",
   ): Promise<CartSelectedAllServiceResult> {
-    return this.repository.cartSelectedAll(customerId, status);
+    return await this.repository.cartSelectedAll(customerId, status);
   }
 
   async cartSelectedMerchant(
     customerId: number,
     merchantId: number,
   ): Promise<CartSelectedMerchantServiceResult> {
-    return this.repository.cartSelectedMerchant(customerId, merchantId);
+    return await this.repository.cartSelectedMerchant(customerId, merchantId);
   }
 
   async productCheckoutV3(customerId: number): Promise<ProductCheckoutV3ServiceResult> {

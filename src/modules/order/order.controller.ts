@@ -1,7 +1,13 @@
 import type { Context } from "hono";
 import type { ContentType } from "@/shared/types/content-type";
+import { HTTP_STATUS } from "@/shared/constants/http-status";
 import { OrderService } from "./order.service.ts";
-import type { CancelOrderRequest, FinishOrderRequest } from "./order.dto.ts";
+import type {
+  CancelOrderRequest,
+  FinishOrderRequest,
+  TransactionAuthData,
+  TransactionV3Request,
+} from "./order.dto.ts";
 
 export class OrderController {
   private service: OrderService;
@@ -45,6 +51,27 @@ export class OrderController {
     }
 
     const result = await this.service.cancelOrder(payload);
+    const { statusCode, ...responseData } = result;
+
+    return c.json(responseData, statusCode);
+  };
+
+  transactionV3 = async (c: Context<ContentType>): Promise<Response> => {
+    const payload = c.get("validatedBody") as TransactionV3Request;
+    const authData = c.get("authData") as TransactionAuthData | undefined;
+
+    if (!authData?.customer_id) {
+      return c.json(
+        {
+          success: false,
+          auth: false,
+          message: "Unauthorized",
+        },
+        HTTP_STATUS.UNAUTHORIZED,
+      );
+    }
+
+    const result = await this.service.transactionV3(payload, authData);
     const { statusCode, ...responseData } = result;
 
     return c.json(responseData, statusCode);

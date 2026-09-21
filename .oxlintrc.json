@@ -18,7 +18,12 @@
     "no-empty": "error",
     "no-empty-function": "warn",
     "no-unreachable": "error",
-    "no-shadow": "error",
+    "no-shadow": [
+      "error",
+      {
+        "allow": ["eq", "and", "or", "not", "inArray", "asc", "desc", "sql", "exists", "notExists"]
+      }
+    ],
     "prefer-arrow-callback": "error",
     "object-shorthand": "error",
     "no-throw-literal": "error",

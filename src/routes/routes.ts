@@ -18,6 +18,7 @@ import { paymentMethodRoutes } from "@/modules/payment-method/payment-method.rou
 import { historyOrderRoutes } from "@/modules/history-order";
 import { cartRoutes } from "@/modules/cart/cart.routes.ts";
 import { courierExpeditionRoutes } from "@/modules/courier-expedition/courier-expedition.routes";
+import { orderRoutes } from "@/modules/order";
 
 const routes = new OpenAPIHono<ContentType>();
 
@@ -57,5 +58,6 @@ routes.route("/history", historyOrderRoutes);
 routes.route("/delivery", courierRoutes);
 routes.route("/cart", cartRoutes);
 routes.route("/delive_price_v2", courierExpeditionRoutes);
+routes.route("/order", orderRoutes);
 
 export default routes;

@@ -7,7 +7,6 @@ import {
   AddCartRequestSchema,
   AddCartResponseSchema,
   CheckoutNowRequestSchema,
-  type CheckoutNowRequest,
   CheckoutNowResponseSchema,
   CartQtyV3RequestSchema,
   CartQtyV3ResponseSchema,

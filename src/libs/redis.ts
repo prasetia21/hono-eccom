@@ -116,6 +116,24 @@ export const redisIncr = async (key: string): Promise<number> => {
   return redis.incr(withGlobalPrefix(key));
 };
 
+/**
+ * Atomic lock (set-if-not-exists) — ekuivalen `Cache::lock($name, $ttl)->get()` pada Laravel.
+ * Lock dilepas otomatis oleh Redis setelah `ttlInSeconds` (tidak di-release manual,
+ * mengikuti perilaku kode Laravel yang membiarkan lock expired sendiri).
+ */
+export const redisAcquireLock = async (
+  key: string,
+  ttlInSeconds: number,
+  token = String(Date.now()),
+): Promise<boolean> => {
+  const redis = await getRedis();
+  const result = await redis.set(withGlobalPrefix(key), token, {
+    NX: true,
+    EX: ttlInSeconds,
+  });
+  return result === "OK";
+};
+
 export const checkRedisConnection = async (): Promise<{
   status: string;
   error: string | null;

@@ -1133,7 +1133,7 @@ export class CartRepository {
 
       const isCod = codMerchant.length > 0 && merchant.merchantCod === "1";
 
-      const { merchantPassword, ...merchantWithoutPassword } = merchant;
+      const { merchantPassword: _merchantPassword, ...merchantWithoutPassword } = merchant;
 
       data.push({
         ...merchantWithoutPassword,
