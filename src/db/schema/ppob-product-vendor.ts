@@ -1,0 +1,62 @@
+import { pgTable, bigint, varchar, text, timestamp, index, numeric } from "drizzle-orm/pg-core";
+import { enumZeroOne, enumPvModel } from "./enums";
+
+export const ppobProductVendorTable = pgTable(
+  "_ppob_product_vendor",
+  {
+    pvId: bigint("pv_id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    ppobVendorId: bigint("ppob_vendor_id", { mode: "number" }).notNull(),
+    catId: bigint("cat_id", { mode: "number" }).notNull(),
+    ppobId: bigint("ppob_id", { mode: "number" }).notNull(),
+    pvCategoryId: bigint("pv_category_id", { mode: "number" }).default(0),
+    piCategoryId: bigint("pi_category_id", { mode: "number" }),
+    pdCategoryId: bigint("pd_category_id", { mode: "number" }),
+    pdLabelId: bigint("pd_label_id", { mode: "number" }),
+    pvLabelId: bigint("pv_label_id", { mode: "number" }),
+    piLabelId: bigint("pi_label_id", { mode: "number" }),
+    pvCode: varchar("pv_code", { length: 50 }).notNull(),
+    pvName: varchar("pv_name", { length: 100 }).notNull(),
+    pvDesc: text("pv_desc"),
+    pvModel: enumPvModel("pv_model").notNull(),
+    pvPrice: bigint("pv_price", { mode: "number" }).notNull(),
+    pvAdminBank: bigint("pv_admin_bank", { mode: "number" }).notNull(),
+    pvCashback: bigint("pv_cashback", { mode: "number" }).notNull(),
+    pvMargin: numeric("pv_margin", { precision: 8, scale: 2 }).default("0"),
+    pvProvince: varchar("pv_province", { length: 100 }),
+    pvCity: varchar("pv_city", { length: 100 }),
+    pvStatusActive: enumZeroOne("pv_status_active").notNull(),
+    pvStatusDelete: enumZeroOne("pv_status_delete").default("0"),
+    pvCreateBy: bigint("pv_create_by", { mode: "number" }).notNull(),
+    pvCreateDate: timestamp("pv_create_date", { withTimezone: true }).notNull(),
+    cVoucherCategoryId: bigint("c_voucher_category_id", { mode: "number" }),
+    cVoucherLabelId: bigint("c_voucher_label_id", { mode: "number" }),
+  },
+  (table) => ({
+    catIdIdx: index("_ppob_product_vendor_cat_id").on(table.catId),
+    cityIdx: index("_ppob_product_vendor_city").on(table.pvProvince, table.pvCity),
+    codeIdx: index("_ppob_product_vendor_code").on(table.pvCode),
+    compoundIdIdx: index("_ppob_product_vendor_id").on(
+      table.ppobVendorId,
+      table.catId,
+      table.ppobId,
+      table.pvCategoryId,
+      table.piCategoryId,
+      table.pdCategoryId,
+    ),
+    nameIdx: index("_ppob_product_vendor_name").on(table.pvName),
+    pdCategoryIdIdx: index("_ppob_product_vendor_pd_category_id").on(table.pdCategoryId),
+    piCategoryIdIdx: index("_ppob_product_vendor_pi_category_id").on(table.piCategoryId),
+    ppobIdIdx: index("_ppob_product_vendor_ppob_id").on(table.ppobId),
+    ppobVendorIdIdx: index("_ppob_product_vendor_ppob_vendor_id").on(table.ppobVendorId),
+    pvCategoryIdIdx: index("_ppob_product_vendor_pv_category_id").on(table.pvCategoryId),
+    pvCityIdx: index("_ppob_product_vendor_pv_city").on(table.pvCity),
+    createDateIdx: index("_ppob_product_vendor_pv_create_date").on(table.pvCreateDate.desc()),
+    pvProvinceIdx: index("_ppob_product_vendor_pv_province").on(table.pvProvince),
+    pvStatusActiveIdx: index("_ppob_product_vendor_pv_status_active").on(table.pvStatusActive),
+    pvStatusDeleteIdx: index("_ppob_product_vendor_pv_status_delete").on(table.pvStatusDelete),
+    statusIdx: index("_ppob_product_vendor_status").on(table.pvStatusActive, table.pvStatusDelete),
+  }),
+);
+
+export type PpobProductVendor = typeof ppobProductVendorTable.$inferSelect;
+export type NewPpobProductVendor = typeof ppobProductVendorTable.$inferInsert;

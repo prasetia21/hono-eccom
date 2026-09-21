@@ -1,0 +1,55 @@
+import { pgTable, bigint, varchar, text, timestamp, time, date, index } from "drizzle-orm/pg-core";
+import { enumZeroOne } from "./enums";
+
+export const merchantTable = pgTable(
+  "_merchant",
+  {
+    merchantId: bigint("merchant_id", { mode: "number" }).generatedAlwaysAsIdentity().primaryKey(),
+    customerId: bigint("customer_id", { mode: "number" }),
+    rCityId: bigint("r_city_id", { mode: "number" }).default(0),
+    merchantRegId: text("merchant_reg_id").notNull(),
+    merchantFbId: varchar("merchant_fb_id", { length: 255 }).notNull(),
+    merchantCode: varchar("merchant_code", { length: 20 }).default(""),
+    merchantName: varchar("merchant_name", { length: 100 }).default(""),
+    merchantEmail: varchar("merchant_email", { length: 100 }).default(""),
+    merchantPassword: varchar("merchant_password", { length: 40 }).default(""),
+    merchantLogo: varchar("merchant_logo", { length: 50 }).default(""),
+    merchantDesc: text("merchant_desc"),
+    merchantRules: text("merchant_rules"),
+    merchantPhone: varchar("merchant_phone", { length: 15 }).default(""),
+    merchantWeb: varchar("merchant_web", { length: 200 }).default(""),
+    merchantFacebook: varchar("merchant_facebook", { length: 50 }).default(""),
+    merchantTwitter: varchar("merchant_twitter", { length: 50 }).default(""),
+    merchantInstagram: varchar("merchant_instagram", { length: 50 }).default(""),
+    merchantAddress: varchar("merchant_address", { length: 200 }).default(""),
+    merchantProvince: varchar("merchant_province", { length: 200 }).default(""),
+    merchantDistrict: varchar("merchant_district", { length: 200 }).default(""),
+    merchantSubdistrict: varchar("merchant_subdistrict", { length: 200 }).default(""),
+    merchantCity: varchar("merchant_city", { length: 200 }).default(""),
+    merchantPostcode: varchar("merchant_postcode", { length: 10 }).default(""),
+    merchantLat: varchar("merchant_lat", { length: 20 }).default(""),
+    merchantLng: varchar("merchant_lng", { length: 20 }).default(""),
+    merchantHits: bigint("merchant_hits", { mode: "number" }).default(0),
+    merchantCat: text("merchant_cat"),
+    merchantExpedisi: text("merchant_expedisi"),
+    merchantCod: enumZeroOne("merchant_cod").default("0"),
+    merchantEbmart: enumZeroOne("merchant_ebmart").default("0"),
+    merchantStatus: enumZeroOne("merchant_status").notNull(),
+    merchantOpenTime: time("merchant_open_time").notNull(),
+    merchantCloseTime: time("merchant_close_time").notNull(),
+    merchantCloseStartDate: date("merchant_close_start_date"),
+    merchantCloseEndDate: date("merchant_close_end_date"),
+    merchantCreateDate: timestamp("merchant_create_date", { withTimezone: true }),
+  },
+  (t) => ({
+    customerIdIdx: index("_merchant_customer_id").on(t.customerId),
+    idIdx: index("_merchant_id").on(t.customerId, t.rCityId),
+    createDateIdx: index("_merchant_merchant_create_date").on(t.merchantCreateDate),
+    statusIdx: index("_merchant_merchant_status").on(t.merchantStatus),
+    rCityIdIdx: index("_merchant_r_city_id").on(t.rCityId),
+    comboStatusIdx: index("_merchant_status").on(t.merchantCod, t.merchantEbmart, t.merchantStatus),
+  }),
+);
+
+export type Merchant = typeof merchantTable.$inferSelect;
+export type NewMerchant = typeof merchantTable.$inferInsert;

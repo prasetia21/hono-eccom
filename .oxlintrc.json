@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "env": {
+    "node": true,
+    "es2024": true
+  },
+  "globals": {
+    "crypto": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": "error",
+    "no-undef": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "eqeqeq": "error",
+    "no-console": ["warn", { "allow": ["table"] }],
+    "no-duplicate-imports": "error",
+    "no-empty": "error",
+    "no-empty-function": "warn",
+    "no-unreachable": "error",
+    "no-shadow": "error",
+    "prefer-arrow-callback": "error",
+    "object-shorthand": "error",
+    "no-throw-literal": "error",
+    "require-await": "error",
+    "no-promise-executor-return": "error"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "src/db/migrations",
+    "*.config.ts",
+    "*.config.js",
+    "scripts"
+  ]
+}

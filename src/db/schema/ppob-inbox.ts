@@ -1,0 +1,105 @@
+import { sql } from "drizzle-orm";
+import {
+  check,
+  doublePrecision,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  varchar,
+  index,
+  integer,
+  serial,
+} from "drizzle-orm/pg-core";
+
+export const ppobInboxTable = pgTable(
+  "_inbox",
+  {
+    ppobPretopupId: serial("ppob_pretopup_id").primaryKey(),
+    customerId: integer("customer_id").notNull(),
+    whitelabelId: integer("whitelabel_id").notNull().default(0),
+    masterId: integer("master_id").notNull().default(0),
+    dealerId: integer("dealer_id").notNull().default(0),
+    ppobId: integer("ppob_id").notNull(),
+    pvId: integer("pv_id").notNull(),
+    ppobTransId: integer("ppob_trans_id"),
+    ppobPretopupTrxId: varchar("ppob_pretopup_trx_id", { length: 255 }),
+    ppobPretopupEmail: varchar("ppob_pretopup_email", { length: 50 }),
+    ppobPretopupNumber: varchar("ppob_pretopup_number", { length: 20 }).notNull(),
+    ppobPretopupIdpel1: varchar("ppob_pretopup_idpel1", { length: 30 }).notNull(),
+    ppobPretopupIdpel2: varchar("ppob_pretopup_idpel2", { length: 30 }).notNull(),
+    ppobPretopupIdpel3: varchar("ppob_pretopup_idpel3", { length: 30 }).notNull(),
+    ppobPretopupType: varchar("ppob_pretopup_type", { length: 20 }).notNull(),
+    ppobPretopupModel: varchar("ppob_pretopup_model", { length: 30 }).notNull(),
+    ppobPretopupChannel: varchar("ppob_pretopup_channel", { length: 10 }).notNull(),
+    ppobPretopupBillquantity: integer("ppob_pretopup_billquantity").notNull(),
+    ppobPretopupPrice: doublePrecision("ppob_pretopup_price").notNull(),
+    ppobPretopupAdminBank: doublePrecision("ppob_pretopup_admin_bank").notNull(),
+    ppobPretopupMargin: doublePrecision("ppob_pretopup_margin").notNull(),
+    ppobPretopupMarginCompany: doublePrecision("ppob_pretopup_margin_company").notNull(),
+    ppobPretopupMarginMaster: doublePrecision("ppob_pretopup_margin_master").notNull(),
+    ppobPretopupMarginDealer: doublePrecision("ppob_pretopup_margin_dealer").notNull(),
+    ppobPretopupMarkupCompany: doublePrecision("ppob_pretopup_markup_company").notNull().default(0),
+    ppobPretopupMarkupMaster: doublePrecision("ppob_pretopup_markup_master").notNull().default(0),
+    ppobPretopupMarkupDealer: doublePrecision("ppob_pretopup_markup_dealer").notNull(),
+    ppobPretopupCashback: doublePrecision("ppob_pretopup_cashback").notNull(),
+    ppobPretopupCashbackCompany: doublePrecision("ppob_pretopup_cashback_company").notNull(),
+    ppobPretopupCashbackMaster: doublePrecision("ppob_pretopup_cashback_master").notNull(),
+    ppobPretopupCashbackDealer: doublePrecision("ppob_pretopup_cashback_dealer").notNull(),
+    ppobPretopupCashbackTrans: doublePrecision("ppob_pretopup_cashback_trans").notNull(),
+    ppobPretopupPvPrice: doublePrecision("ppob_pretopup_pv_price").notNull(),
+    ppobPretopupPvAdmin: doublePrecision("ppob_pretopup_pv_admin").notNull(),
+    ppobPretopupPvCashback: doublePrecision("ppob_pretopup_pv_cashback").notNull(),
+    ppobPretopupStatus: varchar("ppob_pretopup_status", { length: 20 })
+      .notNull()
+      .default("pending"),
+    ppobPretopupResponRc: varchar("ppob_pretopup_respon_rc", { length: 5 }).notNull(),
+    ppobPretopupResponReqnum: text("ppob_pretopup_respon_reqnum").notNull(),
+    ppobPretopupResponDesc: text("ppob_pretopup_respon_desc").notNull(),
+    ppobPretopupResponDate: timestamp("ppob_pretopup_respon_date", { mode: "date" }),
+    ppobPretopupRef: varchar("ppob_pretopup_ref", { length: 255 }),
+    ppobPretopupPaymentMethod: varchar("ppob_pretopup_payment_method", { length: 50 }).notNull(),
+    ppobPretopupCheckCount: integer("ppob_pretopup_check_count").default(0),
+    ppobPretopupUpdateReason: text("ppob_pretopup_update_reason").notNull(),
+    ppobPretopupUpdateBy: integer("ppob_pretopup_update_by").notNull(),
+    ppobPretopupUpdateDate: timestamp("ppob_pretopup_update_date", { mode: "date" }),
+    ppobPretopupPayDate: timestamp("ppob_pretopup_pay_date", { mode: "date" }),
+    ppobPretopupCreateDate: timestamp("ppob_pretopup_create_date", { mode: "date" }).notNull(),
+    transStatus: varchar("trans_status", { length: 15 }),
+    category: jsonb("category"),
+    product: jsonb("product"),
+    inquiry: jsonb("inquiry"),
+    customer: jsonb("customer"),
+    ppobPretopupPaymentGateway: varchar("ppob_pretopup_payment_gateway", { length: 16 })
+      .notNull()
+      .default("midtrans"),
+    ppobPretopupQrContent: text("ppob_pretopup_qr_content"),
+  },
+  (t) => ({
+    customerIdx: index("_inbox_customer_id").on(t.customerId),
+    ppobIdx: index("_inbox_ppob_id").on(t.ppobId),
+    pvIdx: index("_inbox_pv_id").on(t.pvId),
+    trxIdx: index("_inbox_ppob_pretopup_trx_id").on(t.ppobPretopupTrxId),
+    statusIdx: index("_inbox_ppob_pretopup_status").on(t.ppobPretopupStatus),
+
+    markupCompanyCheck: check(
+      "_inbox_ppob_pretopup_markup_company_check",
+      sql`${t.ppobPretopupMarkupCompany} >= 0`,
+    ),
+    channelCheck: check(
+      "_inbox_ppob_pretopup_channel_check",
+      sql`${t.ppobPretopupChannel} IN ('json', 'xml')`,
+    ),
+    statusCheck: check(
+      "_inbox_ppob_pretopup_status_check",
+      sql`${t.ppobPretopupStatus} IN ('pending','sending','process','cancel','success')`,
+    ),
+    typeCheck: check(
+      "_inbox_ppob_pretopup_type_check",
+      sql`${t.ppobPretopupType} IN ('margin','cashback','persen')`,
+    ),
+  }),
+);
+
+export type PpobInbox = typeof ppobInboxTable.$inferSelect;
+export type NewPpobInbox = typeof ppobInboxTable.$inferInsert;
